@@ -1,12 +1,15 @@
+# This template was created to be used in combination with ghas-management automation, changes here will most likely require adjustments in the automation code
+
 name: "CodeQL Advanced Security Scanning"
 
 on:
-  push:
-    branches: [ "main", "master" ]
-  pull_request:
-    branches: [ "main", "master" ]
+# Initial proposal is daily runs to avoid overloading runners, teams can uncomment below to enable on push and PR events
+#  push:
+#    branches: [ "main", "master" ]
+#  pull_request:
+#    branches: [ "main", "master" ]
   schedule:
-    - cron: '0 0 * * 1' # Weekly on Mondays
+    - cron: '19 23 * * *' # Will be randomized per repository, daily runs between 22:00 and 06:00 UTC
 
 jobs:
   analyze:
@@ -20,8 +23,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ ''python'' ]
+        include:
+          - language: java-kotlin
+            build-mode: manual
+          - language: javascript-typescript
+            build-mode: none
+          - language: python
+            build-mode: none
+          # This are just examples, automation will configure based on repo languages and if they need build or not
+          # 'build-mode: auto' will not be used as this proved to be less reliable
 
+    # For languages that require build, teams must specify the container in which CodeQL will run; if language does not require build this section is removed by automation
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -30,9 +42,7 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
-
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v3
+          build-mode: ${{ matrix.build-mode }}
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
