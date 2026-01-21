@@ -8,6 +8,7 @@ on:
 #    branches: [ "main", "master" ]
   schedule:
     - cron: '19 23 * * *' # Randomized per repository, daily runs somewhere between 22:00 and 06:00 UTC
+  workflow_dispatch: 
 
 jobs:
   analyze:
