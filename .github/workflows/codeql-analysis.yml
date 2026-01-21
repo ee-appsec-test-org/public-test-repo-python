@@ -1,12 +1,13 @@
 name: "CodeQL Advanced Security Scanning"
 
 on:
-  push:
-    branches: [ "main", "master" ]
-  pull_request:
-    branches: [ "main", "master" ]
+# Initial proposal is daily runs to avoid overloading runners, teams can uncomment below to enable on push and PR events
+#  push:
+#    branches: [ "main", "master" ]
+#  pull_request:
+#    branches: [ "main", "master" ]
   schedule:
-    - cron: '0 0 * * 1' # Weekly on Mondays
+    - cron: '19 23 * * *' # Randomized per repository, daily runs somewhere between 22:00 and 06:00 UTC
 
 jobs:
   analyze:
@@ -20,8 +21,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ ''python'' ]
-
+        include:
+          - language: python
+            build-mode: none
+    # For languages that require build, teams must specify the container in which CodeQL will run; if language does not require build this section is removed by automation
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -30,9 +33,7 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
-
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v3
+          build-mode: ${{ matrix.build-mode }}
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
