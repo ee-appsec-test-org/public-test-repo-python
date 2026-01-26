@@ -27,6 +27,8 @@ jobs:
             build-mode: none
           - language: python
             build-mode: none
+          - language: kotlin
+            build-mode: manual
 
 
 # custom comment
@@ -46,6 +48,12 @@ jobs:
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
+
+      - name: Build app
+        if: matrix.build-mode == 'manual'
+        shell: bash
+        run: |
+          BUILD_COMMAND_PLACEHOLDER
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
