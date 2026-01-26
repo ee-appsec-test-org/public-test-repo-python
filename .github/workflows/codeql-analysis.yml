@@ -27,11 +27,6 @@ jobs:
             build-mode: none
           - language: python
             build-mode: none
-          - language: java-kotlin
-            build-mode: manual
-    # For languages that require build, teams must specify the container in which CodeQL will run; if language does not require build this section is removed by automation
-    container:
-      image: 'IMAGE_PLACEHOLDER' # Teams should adapt, should be in the format 'eu.gcr.io/halfpipe-io/build-image'
 
     steps:
       - name: Checkout repository
